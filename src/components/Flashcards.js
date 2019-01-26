@@ -8,7 +8,8 @@ class Flashcards extends React.Component {
       problemTop: '',
       operation: '',
       bottomNumber: '',
-      answer: ''
+      answer: '',
+      correct: false
     }
     this.handleChange = this.handleChange.bind(this);
     this.checkAnswer = this.checkAnswer.bind(this);
@@ -37,8 +38,10 @@ class Flashcards extends React.Component {
 
   checkAnswer() {
     if(this.state.problemTop + this.state.bottomNumber === this.state.answer){
-      this.setState({answer: ''})
+      this.setState({answer: '', correct: true})
       this.addition();
+    } else if(this.state.problemTop + this.state.bottomNumber !== this.state.answer) {
+      this.setState({answer: '', correct: false})
     }
   }
 
@@ -46,9 +49,11 @@ class Flashcards extends React.Component {
     return (
       <div>
         <h1 id="h1">Practice Math!</h1>
-        <div id="problemTop">{this.state.problemTop}</div>
-        <div id="operation">{this.state.operation}</div>
-        <div id="bottomNumber">{this.state.bottomNumber}</div>
+        <div className={this.state.correct ? "green" : "red"}>
+          <div id="problemTop">{this.state.problemTop}</div>
+          <div id="operation">{this.state.operation}</div>
+          <div id="bottomNumber">{this.state.bottomNumber}</div>
+        </div>
         <div id="problemAnswer">
           <input type="text" id="answerBox" onChange={this.handleChange} value={this.state.answer}/>
         </div>
