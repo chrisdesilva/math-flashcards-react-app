@@ -1,12 +1,11 @@
 import React from 'react';
 import '../styles/Flashcards.css';
-import { Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-
+import { Button, Col, Container, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Row } from 'reactstrap';
 
 let topNumber = 0;
 let bottomNumber = 0;
-let divisor = 0;
-let dividend = 0;
+let dividend = Math.floor(Math.random() * 144);
+let divisor = 1;
 
 class Flashcards extends React.Component {
   constructor(props) {
@@ -18,24 +17,26 @@ class Flashcards extends React.Component {
       operation: '',
       bottomNumber: '',
       answer: '',
+      numCorrect: 0,
+      total: 0,
       correct: false,
       dropdownOpen: false
     }
     this.handleChange = this.handleChange.bind(this);
     this.checkAnswer = this.checkAnswer.bind(this);
   }
-
+  //used for dropdown menu of operations
   toggle() {
     this.setState(prevState => ({
       dropdownOpen: !prevState.dropdownOpen
     }));
   }
-
+  //track changes in answer box
   handleChange(e) {
     e.preventDefault();
     this.setState({answer: Number(e.target.value)});
   }
-
+  //allow checkAnswer on enter key
   onKeyDown = (event) => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
     if (event.key === 'Enter') {
@@ -44,21 +45,27 @@ class Flashcards extends React.Component {
       this.checkAnswer();
     }
   }
-
+  //make top and bottom numbers for +, -, and x problems
   generateTop = (min, max) => {
     topNumber = Math.floor(Math.random() * (max - min) + min);
+    if(topNumber < 10){
+      topNumber = "0" + topNumber;
+    };
     this.setState({problemTop: topNumber});
   }
 
   generateBottom = (min, max) => {
     bottomNumber = Math.floor(Math.random() * (max - min) + min);
+    if(bottomNumber < 10){
+      bottomNumber = "0" + bottomNumber;
+    };
     this.setState({bottomNumber: bottomNumber});
   }
-
+  //make top and bottom numbers for division problems
   generateDividend = (min, max) => {
     dividend = Math.floor(Math.random() * (max - min) + min);
     if(dividend < 10) {
-      dividend = '0' + dividend
+      dividend = "0" + dividend
     }
     this.setState({problemTop: dividend})
   }
@@ -73,7 +80,7 @@ class Flashcards extends React.Component {
     }
     this.setState({bottomNumber: divisor})
   }
-
+  //make problems based on operation choice
   addition = () => {
     this.generateTop(0, 100);
     this.generateBottom(0, 100);
@@ -97,7 +104,7 @@ class Flashcards extends React.Component {
     this.generateDivisor(1, 12);
     this.setState({operation: '÷'})
   }
-
+  //refresh component so new problem appears
   getProblem = () => {
     switch(this.state.operation){
       default: 
@@ -119,39 +126,64 @@ class Flashcards extends React.Component {
   }
 
   markCorrect = () => {
-    this.setState({answer: '', correct: true})
+    this.setState(
+      {
+        answer: '', 
+        numCorrect: this.state.numCorrect + 1, 
+        total: this.state.total + 1, 
+        correct: true
+      });
     this.getProblem();
   }
-
+  //check if answers are correct
   checkAddition = () => {
-    if(this.state.problemTop + this.state.bottomNumber === this.state.answer){
+    if(Number(this.state.problemTop) + Number(this.state.bottomNumber) === Number(this.state.answer)){
       this.markCorrect()
-    } else if(this.state.problemTop + this.state.bottomNumber !== this.state.answer) {
-      this.setState({answer: '', correct: false})
+    } else if(Number(this.state.problemTop) + Number(this.state.bottomNumber) !== Number(this.state.answer)) {
+      this.setState(
+        {
+          answer: '', 
+          total: this.state.total + 1, 
+          correct: false
+        });
     }
   }
 
   checkSubtraction = () => {
-    if(this.state.problemTop - this.state.bottomNumber === this.state.answer){
+    if(Number(this.state.problemTop) - Number(this.state.bottomNumber) === Number(this.state.answer)){
       this.markCorrect()
-    } else if(this.state.problemTop - this.state.bottomNumber !== this.state.answer) {
-      this.setState({answer: '', correct: false})
+    } else if(Number(this.state.problemTop) - Number(this.state.bottomNumber) !== Number(this.state.answer)) {
+      this.setState(
+        {
+          answer: '', 
+          total: this.state.total + 1, 
+          correct: false
+        });
     }
   }
 
   checkMultiplication = () => {
-    if(this.state.problemTop * this.state.bottomNumber === this.state.answer){
+    if(Number(this.state.problemTop) * Number(this.state.bottomNumber) === Number(this.state.answer)){
       this.markCorrect()
-    } else if(this.state.problemTop * this.state.bottomNumber !== this.state.answer) {
-      this.setState({answer: '', correct: false})
+    } else if(Number(this.state.problemTop) * Number(this.state.bottomNumber) !== Number(this.state.answer)) {
+      this.setState(
+        {
+          answer: '', 
+          total: this.state.total + 1, 
+          correct: false
+        });
     }
   }
 
   checkDivision = () => {
-    if(this.state.problemTop / this.state.bottomNumber === this.state.answer){
+    if(Number(this.state.problemTop) / Number(this.state.bottomNumber) === Number(this.state.answer)){
       this.markCorrect()
-    } else if(this.state.problemTop / this.state.bottomNumber !== this.state.answer) {
-      this.setState({answer: '', correct: false})
+    } else if(Number(this.state.problemTop) / Number(this.state.bottomNumber) !== Number(this.state.answer)) {
+      this.setState(
+        {answer: '', 
+        total: this.state.total + 1, 
+        correct: false
+      });
     }
   }
 
@@ -173,23 +205,23 @@ class Flashcards extends React.Component {
         this.checkDivision();
         break;
     }
-    
   }
 
   render(){
     return (
-      <div>
+      <Container>
         <h1 id="h1">Practice Math!</h1>
-        <div className={this.state.correct ? "green" : "red"}>
-          <div id="problemTop">{this.state.problemTop}</div>
-          <div id="operation">{this.state.operation}</div>
-          <div id="bottomNumber">{this.state.bottomNumber}</div>
-        </div>
+        <Row className={this.state.correct ? "green" : "red"}>
+          <Col id="problemTop">{this.state.problemTop}</Col>
+        </Row>
+        <Row className={this.state.correct ? "green" : "red"}>
+          <Col id="bottomNumber">{this.state.operation}{this.state.bottomNumber}</Col>
+        </Row>
           <div id="problemAnswer">
             <input type="text" id="answerBox" onChange={this.handleChange} onKeyDown={this.onKeyDown} value={this.state.answer}/>
           </div>
           <Button id="newProblem" type="submit" outline color="primary" onClick={this.getProblem}>New Problem</Button>{' '}
-          <Button id="newProblem" outline color="danger" onClick={this.checkAnswer}>Check Answer</Button>{' '}
+          <Button id="newProblem" outline color="success" onClick={this.checkAnswer}>Check Answer</Button>{' '}
           <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle} >
             <DropdownToggle outline color="warning" caret>
               Operations
@@ -201,7 +233,10 @@ class Flashcards extends React.Component {
               <DropdownItem onClick={this.division}>Division</DropdownItem>
             </DropdownMenu>
           </Dropdown>
-      </div>
+          <div id="accuracy">
+          {this.state.total > 0 && <p>Accuracy: {Math.floor((this.state.numCorrect / this.state.total) * 100)}% </p>}
+          </div>
+      </Container>
     )
   }
 }
