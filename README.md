@@ -1,3 +1,7 @@
+https://math-practice-desilva.herokuapp.com/
+
+Click New Problem to get started. Practice addition, subtraction, multiplication, or division by selecting the operation from the operations dropdown menu. See your accuracy measured over time and try to earn an A!
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
